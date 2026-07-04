@@ -1,0 +1,202 @@
+[
+  {
+    "id": "1",
+    "title": "Demo Course 1",
+    "description": "An introductory course covering foundational concepts and methodologies for structured learning.",
+    "thumbnail": "/course-thumb-1.jpg",
+    "progress": 65,
+    "lessonsCount": 12,
+    "modules": [
+      {
+        "id": "m1",
+        "title": "Demo Module 1: Introduction",
+        "topics": [
+          {
+            "id": "t1",
+            "title": "Demo Topic 1",
+            "completed": true,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t2",
+            "title": "Demo Topic 2",
+            "completed": true,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t3",
+            "title": "Demo Topic 3",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          }
+        ]
+      },
+      {
+        "id": "m2",
+        "title": "Demo Module 2: Fundamentals",
+        "topics": [
+          {
+            "id": "t4",
+            "title": "Demo Topic 4",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t5",
+            "title": "Demo Topic 5",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t6",
+            "title": "Demo Topic 6",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "title": "Demo Course 2",
+    "description": "A comprehensive exploration of intermediate topics with practical exercises and assessments.",
+    "thumbnail": "/course-thumb-2.jpg",
+    "progress": 30,
+    "lessonsCount": 18,
+    "modules": [
+      {
+        "id": "m3",
+        "title": "Demo Module 1: Getting Started",
+        "topics": [
+          {
+            "id": "t7",
+            "title": "Demo Topic 1",
+            "completed": true,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t8",
+            "title": "Demo Topic 2",
+            "completed": true,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t9",
+            "title": "Demo Topic 3",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          }
+        ]
+      },
+      {
+        "id": "m4",
+        "title": "Demo Module 2: Core Concepts",
+        "topics": [
+          {
+            "id": "t10",
+            "title": "Demo Topic 4",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t11",
+            "title": "Demo Topic 5",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Demo Course 3",
+    "description": "Advanced material designed to deepen understanding and build mastery through guided practice.",
+    "thumbnail": "/course-thumb-3.jpg",
+    "progress": 100,
+    "lessonsCount": 8,
+    "modules": [
+      {
+        "id": "m5",
+        "title": "Demo Module 1: Overview",
+        "topics": [
+          {
+            "id": "t12",
+            "title": "Demo Topic 1",
+            "completed": true,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t13",
+            "title": "Demo Topic 2",
+            "completed": true,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "title": "Demo Course 4",
+    "description": "A hands-on workshop focusing on applied techniques and real-world problem solving.",
+    "thumbnail": "/course-thumb-4.jpg",
+    "progress": 0,
+    "lessonsCount": 15,
+    "modules": [
+      {
+        "id": "m6",
+        "title": "Demo Module 1: Basics",
+        "topics": [
+          {
+            "id": "t14",
+            "title": "Demo Topic 1",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t15",
+            "title": "Demo Topic 2",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t16",
+            "title": "Demo Topic 3",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "title": "Demo Course 5",
+    "description": "A specialized track exploring niche areas with curated content and expert guidance.",
+    "thumbnail": "/course-thumb-5.jpg",
+    "progress": 10,
+    "lessonsCount": 20,
+    "modules": [
+      {
+        "id": "m7",
+        "title": "Demo Module 1: Foundations",
+        "topics": [
+          {
+            "id": "t17",
+            "title": "Demo Topic 1",
+            "completed": true,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          },
+          {
+            "id": "t18",
+            "title": "Demo Topic 2",
+            "completed": false,
+            "videoUrl": "https://www.youtube.com/watch?v=x7X9w_GIm1s"
+          }
+        ]
+      }
+    ]
+  }
+]
