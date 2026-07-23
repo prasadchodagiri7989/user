@@ -9,6 +9,15 @@ interface CourseCardProps {
   actionLabel?: string;
 }
 
+const API_BASE = import.meta.env.VITE_API_URL as string;
+const BACKEND_URL = API_BASE ? API_BASE.replace('/api', '') : 'http://localhost:5000';
+
+const getThumbnailUrl = (thumbnail: string) => {
+  if (!thumbnail) return '';
+  if (thumbnail.startsWith('http://') || thumbnail.startsWith('https://')) return thumbnail;
+  return `${BACKEND_URL}${thumbnail.startsWith('/') ? '' : '/'}${thumbnail}`;
+};
+
 export function CourseCard({ course, showProgress = true, actionLabel = "View Course" }: CourseCardProps) {
   const navigate = useNavigate();
 
@@ -16,7 +25,7 @@ export function CourseCard({ course, showProgress = true, actionLabel = "View Co
     <div className="group overflow-hidden rounded-xl border border-border bg-card hover-lift cursor-pointer" onClick={() => navigate(`/courses/${course.id}`)}>
       <div className="aspect-[4/3] overflow-hidden">
         <img
-          src={course.thumbnail}
+          src={getThumbnailUrl(course.thumbnail)}
           alt={course.title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />

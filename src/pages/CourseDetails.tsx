@@ -7,6 +7,15 @@ import { Progress } from "@/components/ui/progress";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CheckCircle, Circle, ArrowLeft } from "lucide-react";
 
+const API_BASE = import.meta.env.VITE_API_URL as string;
+const BACKEND_URL = API_BASE ? API_BASE.replace('/api', '') : 'http://localhost:5000';
+
+const getThumbnailUrl = (thumbnail: string) => {
+  if (!thumbnail) return '';
+  if (thumbnail.startsWith('http://') || thumbnail.startsWith('https://')) return thumbnail;
+  return `${BACKEND_URL}${thumbnail.startsWith('/') ? '' : '/'}${thumbnail}`;
+};
+
 const CourseDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -51,7 +60,7 @@ const CourseDetails = () => {
 
         {/* Banner */}
         <div className="relative overflow-hidden rounded-xl">
-          <img src={course.thumbnail} alt={course.title} className="w-full h-48 md:h-64 object-cover" />
+          <img src={getThumbnailUrl(course.thumbnail)} alt={course.title} className="w-full h-48 md:h-64 object-cover" />
           <div className="absolute inset-0 bg-foreground/40 flex items-end p-6">
             <div>
               <h1 className="font-heading text-2xl md:text-3xl font-bold text-background">{course.title}</h1>

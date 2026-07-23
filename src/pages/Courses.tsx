@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
 import { CourseCard } from "@/components/CourseCard";
 import { useCourses } from "@/hooks/use-courses";
@@ -10,7 +11,18 @@ import { cn } from "@/lib/utils";
 type SortOption = 'default' | 'alpha' | 'progress-asc' | 'progress-desc';
 
 const Courses = () => {
-  const [search, setSearch]         = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const search = searchParams.get("search") || "";
+  const setSearch = (val: string) => {
+    setSearchParams((prev) => {
+      if (val) {
+        prev.set("search", val);
+      } else {
+        prev.delete("search");
+      }
+      return prev;
+    });
+  };
   const [showFilters, setShowFilters] = useState(false);
   const [sort, setSort]             = useState<SortOption>('default');
   const [progressMin, setProgressMin] = useState(0);

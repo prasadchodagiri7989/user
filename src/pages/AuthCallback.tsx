@@ -37,6 +37,7 @@ const AuthCallback = () => {
           email:  payload.email,
           role:   payload.role,
           avatar: payload.avatar ?? null,
+          status: payload.status || "active",
         };
 
         login(token, user);

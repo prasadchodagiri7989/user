@@ -52,6 +52,11 @@ export function TopNavbar({ onMenuToggle, showMenuButton = false }: TopNavbarPro
             placeholder="Search courses..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                navigate(`/courses?search=${encodeURIComponent(search)}`);
+              }
+            }}
             className="pl-9 bg-secondary border-0"
           />
         </div>
