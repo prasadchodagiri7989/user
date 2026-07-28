@@ -18,6 +18,9 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Video playback track state
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
   // Watermark state
   const [watermarkPos, setWatermarkPos] = useState({ top: 20, left: 20 });
   const [watermarkTime, setWatermarkTime] = useState<string>("");
@@ -112,7 +115,43 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
     return () => clearInterval(interval);
   }, []);
 
-  // 3. Resolve Embed URL for fallback/external players
+  // 3. Command dispatcher via postMessage to play/pause the video iframe
+  const sendPlayerCommand = (iframeEl: HTMLIFrameElement, command: "play" | "pause") => {
+    if (!iframeEl.contentWindow) return;
+    try {
+      // Send multiple formats for maximum compatibility with different Player.js implementations
+      iframeEl.contentWindow.postMessage(JSON.stringify({ method: command }), "*");
+      iframeEl.contentWindow.postMessage(JSON.stringify({ api: command }), "*");
+      iframeEl.contentWindow.postMessage(JSON.stringify({ event: "command", func: command, args: [] }), "*");
+      iframeEl.contentWindow.postMessage({ api: command }, "*");
+      iframeEl.contentWindow.postMessage({ method: command }, "*");
+    } catch (e) {
+      console.warn("Unable to dispatch player command:", e);
+    }
+  };
+
+  // 4. Click handlers on the transparent overlay
+  const handleOverlayClick = () => {
+    const iframeEl = document.getElementById("bunny-player") as HTMLIFrameElement | null;
+    if (!iframeEl) return;
+
+    const nextState = !isPlaying;
+    setIsPlaying(nextState);
+    sendPlayerCommand(iframeEl, nextState ? "play" : "pause");
+  };
+
+  const handleOverlayDoubleClick = () => {
+    const container = document.getElementById("player-container");
+    if (!container) return;
+
+    if (!document.fullscreenElement) {
+      container.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
+
+  // 5. Resolve Embed URL for fallback/external players
   let embedUrl = signedUrl;
   let title = "Video Player";
 
@@ -138,6 +177,7 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
   // Render States
   return (
     <div
+      id="player-container"
       className={cn(
         "relative w-full aspect-video overflow-hidden rounded-lg bg-black shadow-lg",
         className
@@ -145,7 +185,7 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
     >
       {/* A. Loading Skeleton state */}
       {isLoading && (
-        <div className="absolute inset-0 h-full w-full bg-slate-950 flex flex-col items-center justify-center gap-3">
+        <div className="absolute inset-0 h-full w-full bg-slate-950 flex flex-col items-center justify-center gap-3 z-20">
           <Loader2 className="h-10 w-10 text-primary animate-spin" />
           <span className="text-sm text-slate-400 font-medium">Securing connection...</span>
         </div>
@@ -153,7 +193,7 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
 
       {/* B. Error state display */}
       {!isLoading && error && (
-        <div className="absolute inset-0 h-full w-full bg-slate-950 flex flex-col items-center justify-center text-center p-6 gap-3">
+        <div className="absolute inset-0 h-full w-full bg-slate-950 flex flex-col items-center justify-center text-center p-6 gap-3 z-20">
           {error.includes("enrolled") ? (
             <Lock className="h-12 w-12 text-rose-500 animate-bounce" />
           ) : (
@@ -170,6 +210,7 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
       {!isLoading && !error && embedUrl && (
         <>
           <iframe
+            id="bunny-player"
             src={embedUrl}
             title={title}
             className="absolute inset-0 h-full w-full border-0 z-0"
@@ -178,7 +219,22 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
             referrerPolicy="strict-origin-when-cross-origin"
           />
 
-          {/* Watermark Overlay (15% opacity, dynamic position every 20s, click-through allowed) */}
+          {/* 
+            Transparent security overlay covering the main video frame (top 85%).
+            This blocks browser context menus (inspect options) and handles left-clicks to toggle playback.
+            Leaves the bottom controls bar (bottom 15%) interactive for native seeking, volume, and settings.
+          */}
+          <div
+            className="absolute top-0 left-0 w-full h-[85%] bg-transparent z-10 cursor-pointer"
+            onContextMenu={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onClick={handleOverlayClick}
+            onDoubleClick={handleOverlayDoubleClick}
+          />
+
+          {/* Watermark Overlay (15% opacity, dynamic position every 20s, mix-blend visible, click-through allowed) */}
           {user && (
             <div
               className="absolute font-sans text-[11px] md:text-[13px] font-semibold select-none pointer-events-none text-white/15 mix-blend-difference bg-black/10 px-2 py-1 rounded border border-white/5 transition-all duration-1000 ease-in-out z-10 whitespace-nowrap"
@@ -199,7 +255,7 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
 
       {/* D. Fallback empty state */}
       {!isLoading && !error && !embedUrl && (
-        <div className="absolute inset-0 h-full w-full bg-slate-950 flex flex-col items-center justify-center text-slate-500 gap-2">
+        <div className="absolute inset-0 h-full w-full bg-slate-950 flex flex-col items-center justify-center text-slate-500 gap-2 z-20">
           <AlertCircle className="h-10 w-10 text-slate-600" />
           <span className="text-sm">No video source specified.</span>
         </div>
