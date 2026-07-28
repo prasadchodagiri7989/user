@@ -32,7 +32,7 @@ const LessonPlayer = () => {
   const prevTopic = allTopics[currentIndex - 1];
   const nextTopic = allTopics[currentIndex + 1];
   const completedCount = allTopics.filter((t) => t.completed).length;
-  const hasVideo = !!(currentTopic && currentTopic.videoUrl && currentTopic.videoUrl.trim());
+  const hasVideo = !!(currentTopic && ((currentTopic.videoId && currentTopic.videoId.trim()) || (currentTopic.videoUrl && currentTopic.videoUrl.trim())));
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -105,7 +105,7 @@ const LessonPlayer = () => {
         {/* Content */}
         <div className="flex-1 focus-entry">
           {hasVideo && (
-            <VideoPlayer url={currentTopic.videoUrl} />
+            <VideoPlayer lessonId={currentTopic.id} url={currentTopic.videoUrl} />
           )}
 
           {/* Notes */}

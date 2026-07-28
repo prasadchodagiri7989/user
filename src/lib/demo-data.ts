@@ -19,6 +19,7 @@ export interface Topic {
   title: string;
   completed: boolean;
   videoUrl?: string;
+  videoId?: string;
   notes?: string;
 }
 
