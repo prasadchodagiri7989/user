@@ -1,22 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { clearSession } from "@/lib/api-client";
-import { AlertCircle, Lock, VideoOff, Loader2 } from "lucide-react";
+import { AlertCircle, Lock, VideoOff, Loader2, Play } from "lucide-react";
 
 interface VideoPlayerProps {
   lessonId: string;
   url?: string;
+  title?: string;
+  thumbnailUrl?: string;
   className?: string;
 }
 
 const API_BASE = import.meta.env.VITE_API_URL as string;
 
-export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
+export const VideoPlayer = ({
+  lessonId,
+  url,
+  title,
+  thumbnailUrl,
+  className,
+}: VideoPlayerProps) => {
   const { user, token } = useAuth();
   const [signedUrl, setSignedUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // User interaction and intersection states
+  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
+  const [isIntersecting, setIsIntersecting] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Video playback track state
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -30,9 +43,25 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
   const isLivid = url && url.includes("livid.com/watch/");
   const isExternalVideo = isYoutube || isLivid;
 
-  // 1. Handle Signed URL fetching for Bunny Stream
+  // 0. Handle Viewport Intersection
   useEffect(() => {
-    if (isExternalVideo || !lessonId) {
+    if (!containerRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsIntersecting(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // 1. Handle Signed URL fetching for Bunny Stream (only after user plays and is visible)
+  useEffect(() => {
+    if (isExternalVideo || !lessonId || !hasInteracted || !isIntersecting) {
+      return;
+    }
+    if (signedUrl) {
       return;
     }
 
@@ -97,10 +126,11 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
     return () => {
       isMounted = false;
     };
-  }, [lessonId, token, isExternalVideo]);
+  }, [lessonId, token, isExternalVideo, hasInteracted, isIntersecting, signedUrl]);
 
-  // 2. Handle Watermark Position and Timestamp Rotation
+  // 2. Handle Watermark Position and Timestamp Rotation (only once played)
   useEffect(() => {
+    if (!hasInteracted) return;
     const updateWatermark = () => {
       // Constrain position between 10% and 80% to avoid clipping outside player bounds
       const top = Math.floor(Math.random() * 65) + 10;
@@ -113,7 +143,28 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
 
     const interval = setInterval(updateWatermark, 20000); // Update every 20 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [hasInteracted]);
+
+  // Global coordination listener to pause and unmount this player when another player starts
+  useEffect(() => {
+    const handleOtherPlay = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail && detail.lessonId !== lessonId) {
+        setIsPlaying(false);
+        setHasInteracted(false);
+      }
+    };
+
+    window.addEventListener("skylearn-play-video", handleOtherPlay);
+    return () => {
+      window.removeEventListener("skylearn-play-video", handleOtherPlay);
+    };
+  }, [lessonId]);
+
+  const handlePlayStart = () => {
+    setHasInteracted(true);
+    window.dispatchEvent(new CustomEvent("skylearn-play-video", { detail: { lessonId } }));
+  };
 
   // 3. Command dispatcher via postMessage to play/pause the video iframe
   const sendPlayerCommand = (iframeEl: HTMLIFrameElement, command: "play" | "pause") => {
@@ -145,20 +196,20 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
     if (!container) return;
 
     if (!document.fullscreenElement) {
-      container.requestFullscreen().catch(() => {});
+      container.requestFullscreen().catch(() => { });
     } else {
-      document.exitFullscreen().catch(() => {});
+      document.exitFullscreen().catch(() => { });
     }
   };
 
   // 5. Resolve Embed URL for fallback/external players
   let embedUrl = signedUrl;
-  let title = "Video Player";
+  let titleText = title || "Video Player";
 
   if (isExternalVideo && url) {
     if (isLivid) {
       embedUrl = url.replace("livid.com/watch/", "livid.com/embed/");
-      title = "Livid Player";
+      titleText = title || "Livid Player";
     } else if (isYoutube) {
       embedUrl = url.replace("watch?v=", "embed/");
       if (url.includes("youtu.be/")) {
@@ -168,23 +219,68 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
       embedUrl += embedUrl.includes("?")
         ? "&rel=0&modestbranding=1"
         : "?rel=0&modestbranding=1";
-      title = "YouTube Player";
+      titleText = title || "YouTube Player";
     }
   } else {
-    title = "Bunny Stream Secure Player";
+    titleText = title || "Bunny Stream Secure Player";
+  }
+
+  // Append autoplay and preload parameters appropriately once interacted
+  if (hasInteracted && embedUrl) {
+    if (isYoutube) {
+      embedUrl += embedUrl.includes("?") ? "&autoplay=1" : "?autoplay=1";
+    } else {
+      embedUrl += embedUrl.includes("?")
+        ? "&autoplay=true&preload=false"
+        : "?autoplay=true&preload=false";
+    }
   }
 
   // Render States
   return (
     <div
+      ref={containerRef}
       id="player-container"
       className={cn(
         "relative w-full aspect-video overflow-hidden rounded-lg bg-black shadow-lg",
         className
       )}
     >
+      {/* 1. Custom Beautiful Placeholder State */}
+      {!hasInteracted && (
+        <div
+          onClick={handlePlayStart}
+          className="absolute inset-0 w-full h-full bg-slate-950 flex flex-col items-center justify-center cursor-pointer group select-none z-20"
+        >
+          {thumbnailUrl && (
+            <img
+              src={thumbnailUrl}
+              alt={titleText}
+              className="absolute inset-0 w-full h-full object-cover opacity-45 transition-transform duration-700 ease-out group-hover:scale-105"
+            />
+          )}
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-slate-950/80 z-0" />
+
+          {/* Central Glassmorphic Play Trigger */}
+          <div className="relative z-10 flex flex-col items-center gap-4">
+            <div className="h-16 w-16 md:h-20 md:w-20 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl transition-all duration-300 group-hover:bg-primary/20 group-hover:border-primary/40 group-hover:scale-110">
+              <Play className="h-6 w-6 md:h-8 md:w-8 text-white fill-white transition-all duration-300 group-hover:text-primary-foreground" />
+            </div>
+            {title && (
+              <h4 className="font-heading text-sm md:text-base font-semibold text-slate-200 tracking-wide px-6 text-center transition-colors group-hover:text-primary">
+                {title}
+              </h4>
+            )}
+            <span className="text-xs text-slate-400 font-medium tracking-wider uppercase opacity-80 group-hover:opacity-100 transition-opacity">
+              Click to load and play
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* A. Loading Skeleton state */}
-      {isLoading && (
+      {hasInteracted && isLoading && (
         <div className="absolute inset-0 h-full w-full bg-slate-950 flex flex-col items-center justify-center gap-3 z-20">
           <Loader2 className="h-10 w-10 text-primary animate-spin" />
           <span className="text-sm text-slate-400 font-medium">Securing connection...</span>
@@ -192,7 +288,7 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
       )}
 
       {/* B. Error state display */}
-      {!isLoading && error && (
+      {hasInteracted && !isLoading && error && (
         <div className="absolute inset-0 h-full w-full bg-slate-950 flex flex-col items-center justify-center text-center p-6 gap-3 z-20">
           {error.includes("enrolled") ? (
             <Lock className="h-12 w-12 text-rose-500 animate-bounce" />
@@ -207,15 +303,16 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
       )}
 
       {/* C. Video player rendering */}
-      {!isLoading && !error && embedUrl && (
+      {hasInteracted && !isLoading && !error && embedUrl && (
         <>
           <iframe
             id="bunny-player"
             src={embedUrl}
-            title={title}
+            title={titleText}
             className="absolute inset-0 h-full w-full border-0 z-0"
             allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
             allowFullScreen
+            loading="lazy"
             referrerPolicy="strict-origin-when-cross-origin"
           />
 
@@ -254,7 +351,7 @@ export const VideoPlayer = ({ lessonId, url, className }: VideoPlayerProps) => {
       )}
 
       {/* D. Fallback empty state */}
-      {!isLoading && !error && !embedUrl && (
+      {hasInteracted && !isLoading && !error && !embedUrl && (
         <div className="absolute inset-0 h-full w-full bg-slate-950 flex flex-col items-center justify-center text-slate-500 gap-2 z-20">
           <AlertCircle className="h-10 w-10 text-slate-600" />
           <span className="text-sm">No video source specified.</span>

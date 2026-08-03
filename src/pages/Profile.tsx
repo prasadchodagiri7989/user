@@ -65,14 +65,13 @@ const Profile = () => {
           <div className="grid gap-4">
             <div className="space-y-2">
               <Label>Name</Label>
-              <Input defaultValue={user?.name ?? ""} className="bg-secondary border-0" />
+              <Input defaultValue={user?.name ?? ""} className="bg-secondary border-0" readOnly />
             </div>
             <div className="space-y-2">
               <Label>Email</Label>
               <Input defaultValue={user?.email ?? ""} className="bg-secondary border-0" readOnly />
             </div>
           </div>
-          <Button>Save Changes</Button>
         </div>
 
         {/* Settings */}
@@ -87,26 +86,6 @@ const Profile = () => {
               </div>
               <Switch checked={theme === "dark"} onCheckedChange={toggleTheme} />
             </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-card-foreground">Email Notifications</p>
-                <p className="text-xs text-muted-foreground">Receive updates about new courses</p>
-              </div>
-              <Switch defaultChecked />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-card-foreground">Push Notifications</p>
-                <p className="text-xs text-muted-foreground">Get notified about course progress</p>
-              </div>
-              <Switch />
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-border">
-            <Button variant="outline">Change Password</Button>
           </div>
         </div>
 

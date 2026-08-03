@@ -9,7 +9,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [searchParams] = useSearchParams();
-  
+
   const oauthError = searchParams.get("error");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,10 +18,10 @@ const Login = () => {
   const [error, setError] = useState("");
 
   const errorMessage =
-    oauthError === "oauth_failed"     ? "Google sign-in failed. Please try again." :
-    oauthError === "invalid_token"    ? "Authentication error. Please try again." :
-    oauthError === "account_blocked"  ? "Your account has been blocked by administrator." :
-    error || null;
+    oauthError === "oauth_failed" ? "Google sign-in failed. Please try again." :
+      oauthError === "invalid_token" ? "Authentication error. Please try again." :
+        oauthError === "account_blocked" ? "Your account has been blocked by administrator." :
+          error || null;
 
   const handleEmailLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -62,7 +62,7 @@ const Login = () => {
                 <path d="M6 12v5c3 3 9 3 12 0v-5" />
               </svg>
             </div>
-            <h1 className="font-heading text-2xl font-bold text-foreground">Cificap</h1>
+            <h1 className="font-heading text-2xl font-bold text-foreground">BIM Era Academy</h1>
             <p className="text-sm text-muted-foreground">
               Your focused learning environment
             </p>
@@ -96,62 +96,22 @@ const Login = () => {
           <div className="relative flex items-center justify-center">
             <hr className="w-full border-border" />
             <span className="absolute bg-card px-3 text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
-              Or Sign In with Email
+              Not Registered Yet?
             </span>
           </div>
 
-          {/* Email Form */}
-          <form onSubmit={handleEmailLogin} className="space-y-4">
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
-                  type="email"
-                  required
-                  placeholder="student@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-background pl-9 pr-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/45"
-                />
-              </div>
-            </div>
+          <a
+            href="https://wa.me/919133665544?text=Hello%2C%20I%20would%20like%20to%20register%20and%20purchase%20a%20course%20on%20BIM%20Era%20Academy."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-3 text-sm font-semibold text-white shadow-md active:scale-[0.98] transition-all"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24" className="shrink-0">
+              <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.588 1.485 5.417 1.486 5.485 0 9.949-4.468 9.952-9.953.002-2.657-1.02-5.155-2.88-7.019C17.266 1.802 14.77 .78 12.01.78c-5.49 0-9.956 4.467-9.96 9.953-.002 1.93.504 3.814 1.468 5.464L2.5 21.5l5.247-1.376zM17.486 14.41c-.3-.15-1.77-.874-2.034-.969-.264-.096-.456-.145-.648.15-.191.294-.741.928-.908 1.11-.168.18-.337.2-.637.05-1.128-.567-2.08-1.002-2.905-2.422-.217-.373.217-.346.621-1.155.082-.165.041-.31-.02-.46-.062-.15-.54-1.3-.74-1.785-.195-.47-.417-.406-.57-.413-.147-.007-.317-.008-.487-.008-.17 0-.447.064-.68.312-.234.248-.894.874-.894 2.13 0 1.256.914 2.47 1.04 2.64.127.17 1.8 2.75 4.36 3.856.61.264 1.085.42 1.455.538.613.195 1.172.167 1.613.1.492-.074 1.77-.723 2.022-1.42.253-.697.253-1.295.177-1.42-.076-.127-.264-.2-.565-.35z" />
+            </svg>
+            <span>Register via WhatsApp</span>
+          </a>
 
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input
-                  type={showPwd ? "text" : "password"}
-                  required
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-background pl-9 pr-10 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/45"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPwd(!showPwd)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                >
-                  {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50"
-            >
-              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              <span>{loading ? "Signing in…" : "Sign In"}</span>
-            </button>
-          </form>
-
-          <p className="text-center text-[10px] text-muted-foreground">
-            Demo: <span className="font-mono">student@example.com</span> / <span className="font-mono font-semibold">Student123!</span>
-          </p>
         </div>
       </div>
     </div>

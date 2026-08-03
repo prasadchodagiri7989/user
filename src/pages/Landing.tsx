@@ -21,7 +21,7 @@ const Landing = () => {
     <div className="min-h-screen bg-background">
       {/* Navbar */}
       <nav className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-background/80 backdrop-blur-md px-6 md:px-12">
-        <span className="font-heading text-xl font-bold text-primary">Cificap</span>
+        <span className="font-heading text-xl font-bold text-primary">BIM Era Academy</span>
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={toggleTheme}>
             {theme === "light" ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
@@ -107,13 +107,13 @@ const Landing = () => {
           <div>
             <h4 className="font-heading font-semibold text-card-foreground mb-3">Contact</h4>
             <ul className="space-y-2 text-muted-foreground">
-              <li>hello@cificap.io</li><li>Twitter</li>
+              <li>bimerapvtltd@gmail.com</li>
             </ul>
           </div>
-          
+
         </div>
         <div className="border-t border-border text-center py-4 text-xs text-muted-foreground">
-          © 2026 Cificap. All rights reserved.
+          © 2026 BIMERA. All rights reserved.
         </div>
       </footer>
     </div>

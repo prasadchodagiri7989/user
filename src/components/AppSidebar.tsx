@@ -5,11 +5,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useUnreadAnnouncementsCount } from "@/hooks/use-courses";
 
 const baseNavItems = [
-  { to: "/dashboard",     icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/courses",       icon: BookOpen,        label: "Courses" },
-  { to: "/ai-teacher",    icon: Sparkles,        label: "AI Teacher" },
-  { to: "/announcements", icon: Megaphone,       label: "Announcements", badge: true },
-  { to: "/profile",       icon: UserCircle,      label: "Profile" },
+  { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/courses", icon: BookOpen, label: "Courses" },
+  { to: "/ai-teacher", icon: Sparkles, label: "AI Teacher", comingSoon: true },
+  { to: "/announcements", icon: Megaphone, label: "Announcements", badge: true },
+  { to: "/profile", icon: UserCircle, label: "Profile" },
 ];
 
 interface AppSidebarProps {
@@ -47,7 +47,7 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
       >
         <div className="flex h-16 items-center justify-between border-b border-border px-4">
           <span className="font-heading text-lg font-bold text-primary truncate opacity-100 md:opacity-0 md:group-hover/sidebar:opacity-100 transition-opacity duration-200">
-            Cificap
+            BIM Era Academy
           </span>
           <button
             onClick={onClose}
@@ -81,8 +81,15 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
                   </span>
                 )}
               </span>
-              <span className="truncate opacity-100 md:opacity-0 md:group-hover/sidebar:opacity-100 transition-opacity duration-200 flex items-center gap-2">
-                {item.label}
+              <span className="truncate opacity-100 md:opacity-0 md:group-hover/sidebar:opacity-100 transition-opacity duration-200 flex items-center justify-between w-full">
+                <span className="flex items-center gap-2 min-w-0">
+                  <span className="truncate">{item.label}</span>
+                  {item.comingSoon && (
+                    <span className="text-[9px] font-bold tracking-wider text-rose-500 uppercase bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 shrink-0">
+                      Soon
+                    </span>
+                  )}
+                </span>
                 {item.badge && unreadCount > 0 && (
                   <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1 md:opacity-0 md:group-hover/sidebar:opacity-100 transition-opacity duration-200">
                     {unreadCount > 99 ? "99+" : unreadCount}
