@@ -14,13 +14,21 @@ export interface Module {
   topics: Topic[];
 }
 
+export interface Attachment {
+  id: string;
+  name: string;
+  url: string;
+}
+
 export interface Topic {
   id: string;
   title: string;
   completed: boolean;
   videoUrl?: string;
   videoId?: string;
+  videoType?: 'bunny' | 'youtube';
   notes?: string;
+  attachments?: Attachment[];
 }
 
 export interface Announcement {

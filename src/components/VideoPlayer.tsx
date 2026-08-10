@@ -10,6 +10,7 @@ interface VideoPlayerProps {
   title?: string;
   thumbnailUrl?: string;
   className?: string;
+  videoType?: string;
 }
 
 const API_BASE = import.meta.env.VITE_API_URL as string;
@@ -20,6 +21,7 @@ export const VideoPlayer = ({
   title,
   thumbnailUrl,
   className,
+  videoType,
 }: VideoPlayerProps) => {
   const { user, token } = useAuth();
   const [signedUrl, setSignedUrl] = useState<string>("");
@@ -39,7 +41,7 @@ export const VideoPlayer = ({
   const [watermarkTime, setWatermarkTime] = useState<string>("");
 
   // Determine if it is a non-Bunny external video (like YouTube or Livid)
-  const isYoutube = url && (url.includes("youtube.com/watch?v=") || url.includes("youtu.be/"));
+  const isYoutube = videoType === "youtube" || (url && (url.includes("youtube.com/watch?v=") || url.includes("youtu.be/")));
   const isLivid = url && url.includes("livid.com/watch/");
   const isExternalVideo = isYoutube || isLivid;
 
