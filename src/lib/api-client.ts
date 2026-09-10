@@ -28,14 +28,17 @@ export async function apiFetch<T = unknown>(
     },
   });
 
-  if (res.status === 401 || res.status === 403) {
+  const isLoginRequest = url.includes('/auth/login');
+  if ((res.status === 401 || res.status === 403) && !isLoginRequest) {
     // Check the error body to differentiate "blocked" vs. "token expired"
     const body = await res.json().catch(() => ({})) as { error?: string };
     const isBlocked = body.error?.toLowerCase().includes("blocked");
     clearSession();
-    window.location.href = isBlocked
-      ? "/login?error=account_blocked"
-      : "/login";
+    if (window.location.pathname !== '/login') {
+      window.location.href = isBlocked
+        ? "/login?error=account_blocked"
+        : "/login";
+    }
     throw new Error(body.error ?? "Session expired");
   }
 

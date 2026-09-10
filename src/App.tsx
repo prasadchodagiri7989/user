@@ -17,6 +17,7 @@ import LessonPlayer from "./pages/LessonPlayer";
 import Announcements from "./pages/Announcements";
 import Profile from "./pages/Profile";
 import AITeacher from "./pages/AITeacher";
+import Jobs from "./pages/Jobs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -79,6 +80,7 @@ const App = () => {
               <Route path="/courses/:id"  element={<ProtectedRoute><CourseDetails /></ProtectedRoute>} />
               <Route path="/lesson/:courseId/:topicId" element={<ProtectedRoute><LessonPlayer /></ProtectedRoute>} />
               <Route path="/announcements" element={<ProtectedRoute><Announcements /></ProtectedRoute>} />
+              <Route path="/jobs"          element={<ProtectedRoute><Jobs /></ProtectedRoute>} />
               <Route path="/profile"      element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/ai-teacher"   element={<ProtectedRoute><AITeacher /></ProtectedRoute>} />
 
