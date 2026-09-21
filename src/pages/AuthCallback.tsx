@@ -41,7 +41,6 @@ const AuthCallback = () => {
         };
 
         login(token, user);
-        localStorage.setItem("sl_face_captured", "true");
 
         // Non-blocking: send device fingerprint to backend to enrich login history
         getDeviceInfo().then((device) => {

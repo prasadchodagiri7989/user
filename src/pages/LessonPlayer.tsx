@@ -131,6 +131,7 @@ const LessonPlayer = () => {
         <div className="flex-1 focus-entry">
           {hasVideo && (
             <VideoPlayer
+              key={currentTopic.id}
               lessonId={currentTopic.id}
               url={currentTopic.videoUrl}
               title={currentTopic.title}

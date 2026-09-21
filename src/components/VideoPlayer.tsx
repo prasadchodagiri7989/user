@@ -58,6 +58,15 @@ export const VideoPlayer = ({
     return () => observer.disconnect();
   }, []);
 
+  // Reset player state when lessonId or url changes
+  useEffect(() => {
+    setSignedUrl("");
+    setIsLoading(false);
+    setError(null);
+    setHasInteracted(false);
+    setIsPlaying(false);
+  }, [lessonId, url]);
+
   // 1. Handle Signed URL fetching for Bunny Stream (only after user plays and is visible)
   useEffect(() => {
     if (isExternalVideo || !lessonId || !hasInteracted || !isIntersecting) {

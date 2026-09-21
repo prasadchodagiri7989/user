@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Sora", "sans-serif"],
-        body: ["Inter", "sans-serif"],
+        heading: ["'Glacial Indifference'", "Sora", "sans-serif"],
+        body: ["'Glacial Indifference'", "Inter", "sans-serif"],
+        sans: ["'Glacial Indifference'", "Inter", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

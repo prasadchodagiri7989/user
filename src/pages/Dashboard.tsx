@@ -20,10 +20,16 @@ const Dashboard = () => {
 
   const firstName = user?.name?.split(" ")[0] ?? "there";
 
+  // Dynamic learning stats from real courses/topics
+  const allTopics = courses.flatMap((c) => (c.modules || []).flatMap((m) => m.topics || []));
+  const completedLessons = allTopics.filter((t) => t.completed).length;
+  const totalLessons = allTopics.length;
+  const overallProgress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
   const stats = [
-    { icon: BookOpen,     label: "My Courses",        value: String(courses.length || "—") },
-    { icon: CheckCircle,  label: "Completed Lessons",  value: "14" },
-    { icon: TrendingUp,   label: "Learning Progress",  value: "42%" },
+    { icon: BookOpen,     label: "My Courses",        value: String(courses.length) },
+    { icon: CheckCircle,  label: "Completed Lessons",  value: String(completedLessons) },
+    { icon: TrendingUp,   label: "Learning Progress",  value: `${overallProgress}%` },
   ];
 
   // Fetch public batches when opening the modal
@@ -113,7 +119,7 @@ const Dashboard = () => {
             <div className="flex-1">
               <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">New sign-in from an unrecognised device</p>
               <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
-                Your account was accessed from a new IP{suspiciousData.ip ? ` (${suspiciousData.ip})` : ""}. If this wasn't you, please change your password immediately.
+                Your account was accessed from a new IP{suspiciousData?.ip ? ` (${suspiciousData.ip})` : ""}. If this wasn't you, please change your password immediately.
               </p>
             </div>
             <button
@@ -132,8 +138,8 @@ const Dashboard = () => {
             Welcome back, {firstName}!
           </h1>
           <p className="mt-2 text-muted-foreground">Continue your learning journey.</p>
-          <Progress value={42} className="mt-4 h-2 max-w-xs" />
-          <p className="mt-2 text-xs text-muted-foreground">Overall progress: 42%</p>
+          <Progress value={overallProgress} className="mt-4 h-2 max-w-xs" />
+          <p className="mt-2 text-xs text-muted-foreground">Overall progress: {overallProgress}%</p>
         </div>
 
         {/* Stats */}

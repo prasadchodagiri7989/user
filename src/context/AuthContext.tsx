@@ -16,6 +16,8 @@ interface AuthContextValue {
   logout: () => void;
   isAuthenticated: boolean;
   updateUser: (user: AuthUser) => void;
+  faceCaptured: boolean;
+  setFaceCaptured: (captured: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -106,13 +108,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => clearInterval(interval);
   }, [token, user?.status]);
 
+  const [faceCaptured, setFaceCapturedState] = useState<boolean>(() => {
+    return sessionStorage.getItem("sl_face_captured") === "true";
+  });
+
+  const setFaceCaptured = (captured: boolean) => {
+    setFaceCapturedState(captured);
+    if (captured) {
+      sessionStorage.setItem("sl_face_captured", "true");
+    } else {
+      sessionStorage.removeItem("sl_face_captured");
+      localStorage.removeItem("sl_face_captured");
+    }
+  };
+
   const login = (newToken: string, newUser: AuthUser) => {
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem(TOKEN_KEY, newToken);
     localStorage.setItem(USER_KEY, JSON.stringify(newUser));
     localStorage.setItem("sl_session_expires_at", String(Date.now() + 4 * 60 * 60 * 1000));
-    localStorage.setItem("sl_face_captured", "false");
+    setFaceCaptured(false);
   };
 
   const logout = () => {
@@ -121,7 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem("sl_session_expires_at");
-    localStorage.removeItem("sl_face_captured");
+    setFaceCaptured(false);
   };
 
   const updateUser = (updatedUser: AuthUser) => {
@@ -131,7 +147,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, logout, isAuthenticated: !!token, updateUser }}
+      value={{
+        user,
+        token,
+        login,
+        logout,
+        isAuthenticated: !!token,
+        updateUser,
+        faceCaptured,
+        setFaceCaptured,
+      }}
     >
       {children}
     </AuthContext.Provider>

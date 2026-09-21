@@ -1,4 +1,4 @@
-﻿import { AppLayout } from "@/components/AppLayout";
+import { AppLayout } from "@/components/AppLayout";
 import { useAnnouncements, useMarkAnnouncementRead, useSuspiciousLoginCheck } from "@/hooks/use-courses";
 import { Megaphone, ShieldAlert, X, Calendar } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
@@ -112,7 +112,7 @@ const Announcements = () => {
               <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">New sign-in detected</p>
               <p className="text-xs text-amber-700 dark:text-amber-400 mt-0.5">
                 Your account was accessed from a new IP address
-                {suspiciousData.ip ? ` (${suspiciousData.ip})` : ""}. If this was not you, contact your administrator immediately.
+                {suspiciousData?.ip ? ` (${suspiciousData.ip})` : ""}. If this was not you, contact your administrator immediately.
               </p>
             </div>
             <button

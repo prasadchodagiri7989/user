@@ -6,13 +6,8 @@ import { Camera, ShieldAlert, Sparkles, RefreshCw, AlertCircle, LogOut } from "l
 const API_BASE = import.meta.env.VITE_API_URL as string;
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, token, logout } = useAuth();
+  const { isAuthenticated, token, logout, faceCaptured, setFaceCaptured } = useAuth();
   const location = useLocation();
-
-  // State to track if face capture is completed for the current session
-  const [faceCaptured, setFaceCaptured] = useState(() => {
-    return localStorage.getItem("sl_face_captured") === "true";
-  });
 
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
@@ -182,7 +177,6 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       stream.getTracks().forEach((track) => track.stop());
     }
     setStream(null);
-    localStorage.setItem("sl_face_captured", "true");
     setFaceCaptured(true);
   };
 

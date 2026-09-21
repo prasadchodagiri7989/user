@@ -81,11 +81,11 @@ export interface SuspiciousCheckResult {
 }
 
 export const useSuspiciousLoginCheck = (token: string | null) => {
-  return useQuery({
+  return useQuery<SuspiciousCheckResult>({
     queryKey: ['suspicious-check'],
     enabled: !!token,
     staleTime: 5 * 60 * 1000,
-    queryFn: () =>
+    queryFn: (): Promise<SuspiciousCheckResult> =>
       apiFetch<SuspiciousCheckResult>(`${API_BASE}/auth/suspicious-check`).catch(() => ({ isNewDevice: false })),
   });
 };

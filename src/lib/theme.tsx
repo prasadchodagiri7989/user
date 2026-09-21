@@ -7,14 +7,14 @@ interface ThemeContextType {
   toggleTheme: () => void;
 }
 
-const ThemeContext = createContext<ThemeContextType>({ theme: "light", toggleTheme: () => {} });
+const ThemeContext = createContext<ThemeContextType>({ theme: "dark", toggleTheme: () => {} });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== "undefined") {
-      return (localStorage.getItem("lms-theme") as Theme) || "light";
+      return (localStorage.getItem("lms-theme") as Theme) || "dark";
     }
-    return "light";
+    return "dark";
   });
 
   useEffect(() => {
