@@ -4,6 +4,7 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  phone?: string | null;
   avatar?: string | null;
   role: string;
   status?: string;
@@ -79,6 +80,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }, 10_000);
     return () => clearInterval(interval);
+  }, [token]);
+
+  // Synchronize user profile from backend on mount or when token changes
+  useEffect(() => {
+    if (!token) return;
+    const fetchMe = async () => {
+      try {
+        const API_BASE = import.meta.env.VITE_API_URL as string;
+        const res = await fetch(`${API_BASE}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const fresh = await res.json();
+          setUser((prev) => {
+            const merged: AuthUser = {
+              id: fresh.id || fresh._id,
+              name: fresh.name,
+              email: fresh.email,
+              avatar: fresh.avatar || null,
+              role: fresh.role,
+              status: fresh.status || 'active',
+              phone: fresh.phone || null,
+            };
+            localStorage.setItem(USER_KEY, JSON.stringify(merged));
+            return merged;
+          });
+        }
+      } catch (err) {
+        console.error("Error syncing user profile:", err);
+      }
+    };
+    fetchMe();
   }, [token]);
 
   // Poll for approval status if status is 'pending'

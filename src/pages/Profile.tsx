@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,8 +25,47 @@ const deviceIcon = (ua: string | null) => {
 
 const Profile = () => {
   const { theme, toggleTheme } = useTheme();
-  const { user, token } = useAuth();
+  const { user, token, updateUser } = useAuth();
   const { data: history = [], isLoading: historyLoading } = useLoginHistory(token);
+
+  const [editingPhone, setEditingPhone] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState(user?.phone || "");
+  const [phoneSaving, setPhoneSaving] = useState(false);
+  const [phoneMsg, setPhoneMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleUpdatePhone = async () => {
+    if (!phoneNumber.trim()) {
+      setPhoneMsg({ type: 'error', text: 'WhatsApp number cannot be empty' });
+      return;
+    }
+    if (!/^\+?[\d\s\-()]{7,20}$/.test(phoneNumber.trim())) {
+      setPhoneMsg({ type: 'error', text: 'Please enter a valid phone number (min 7 digits)' });
+      return;
+    }
+
+    try {
+      setPhoneSaving(true);
+      setPhoneMsg(null);
+      const API_BASE = import.meta.env.VITE_API_URL as string;
+      const res = await fetch(`${API_BASE}/auth/phone`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ phone: phoneNumber.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to update phone');
+      if (data.user) updateUser(data.user);
+      setPhoneMsg({ type: 'success', text: 'WhatsApp number updated successfully!' });
+      setEditingPhone(false);
+    } catch (err: any) {
+      setPhoneMsg({ type: 'error', text: err.message || 'Error updating phone' });
+    } finally {
+      setPhoneSaving(false);
+    }
+  };
 
   const initials = user?.name
     ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
@@ -70,6 +110,74 @@ const Profile = () => {
             <div className="space-y-2">
               <Label>Email</Label>
               <Input defaultValue={user?.email ?? ""} className="bg-secondary border-0" readOnly />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-1.5">
+                  <span className="text-emerald-500 font-semibold">WhatsApp Number</span>
+                  <span className="text-[11px] text-muted-foreground font-normal">(Required for portal access)</span>
+                </Label>
+                {!editingPhone && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPhoneNumber(user?.phone || "");
+                      setEditingPhone(true);
+                      setPhoneMsg(null);
+                    }}
+                    className="text-xs text-primary hover:underline font-medium flex items-center gap-1"
+                  >
+                    Edit
+                  </button>
+                )}
+              </div>
+              {editingPhone ? (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <Input
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      placeholder="+91 9876543210"
+                      className="bg-secondary border-0 flex-1"
+                      autoFocus
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleUpdatePhone}
+                      disabled={phoneSaving}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
+                      {phoneSaving ? "Saving..." : "Save"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingPhone(false);
+                        setPhoneNumber(user?.phone || "");
+                        setPhoneMsg(null);
+                      }}
+                      disabled={phoneSaving}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Input
+                  value={user?.phone || "No WhatsApp number provided"}
+                  className="bg-secondary border-0 text-foreground"
+                  readOnly
+                />
+              )}
+              {phoneMsg && (
+                <p className={`text-xs mt-1 ${phoneMsg.type === 'success' ? 'text-emerald-500' : 'text-destructive'}`}>
+                  {phoneMsg.text}
+                </p>
+              )}
             </div>
           </div>
         </div>
