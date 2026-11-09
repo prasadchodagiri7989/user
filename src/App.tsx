@@ -18,6 +18,7 @@ import Announcements from "./pages/Announcements";
 import Profile from "./pages/Profile";
 import AITeacher from "./pages/AITeacher";
 import Jobs from "./pages/Jobs";
+import ExternalJobs from "./pages/ExternalJobs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -73,6 +74,7 @@ const App = () => {
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/external-jobs/:id" element={<ExternalJobs />} />
 
               {/* Protected */}
               <Route path="/dashboard"    element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
